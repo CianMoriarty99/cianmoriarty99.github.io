@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 
@@ -21,3 +22,6 @@ Credits:
 		jQuery (jquery.com)
 		Scrollex (github.com/ajlkn/jquery.scrollex)
 		Responsive Tools (github.com/ajlkn/responsive-tools)
+=======
+My Portfolio
+>>>>>>> a6ea1e9f5096c4315ca2c5d5d93662bec895c58b

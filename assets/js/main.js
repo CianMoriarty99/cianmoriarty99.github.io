@@ -1,1 +1,262 @@
-!function(e){var n,a,o,i=e(window),l=e("body"),r=e("#wrapper"),s=e("#header"),t=e("#nav"),d=e("#main");breakpoints({default:["1681px",null],xlarge:["1281px","1680px"],large:["981px","1280px"],medium:["737px","980px"],small:["481px","736px"],xsmall:["361px","480px"],xxsmall:[null,"360px"]}),e.fn._parallax=function(n){var a=e(window),o=e(this);if(0==this.length||0===n)return o;if(this.length>1){for(var i=0;i<this.length;i++)e(this[i])._parallax(n);return o}return n||(n=.25),o.each(function(){var o,i,l=e(this),r=e('<div class="bg"></div>').appendTo(l);o=function(){r.removeClass("fixed").css("transform","matrix(1,0,0,1,0,0)"),a.on("scroll._parallax",function(){var e=parseInt(a.scrollTop())-parseInt(l.position().top);r.css("transform","matrix(1,0,0,1,0,"+e*n+")")})},i=function(){r.addClass("fixed").css("transform","none"),a.off("scroll._parallax")},"ie"==browser.name||"edge"==browser.name||window.devicePixelRatio>1||browser.mobile?i():(breakpoints.on(">large",o),breakpoints.on("<=large",i))}),a.off("load._parallax resize._parallax").on("load._parallax resize._parallax",function(){a.trigger("scroll")}),e(this)},i.on("load",function(){window.setTimeout(function(){l.removeClass("is-preload")},100)}),e(".scrolly").scrolly(),r._parallax(.925),n=e('<a href="#navPanel" id="navPanelToggle">Menu</a>').appendTo(r),s.scrollex({bottom:"5vh",enter:function(){n.removeClass("alt")},leave:function(){n.addClass("alt")}}),a=e('<div id="navPanel"><nav></nav><a href="#navPanel" class="close"></a></div>').appendTo(l).panel({delay:500,hideOnClick:!0,hideOnSwipe:!0,resetScroll:!0,resetForms:!0,side:"right",target:l,visibleClass:"is-navPanel-visible"}),o=a.children("nav");var p=t.children();breakpoints.on(">medium",function(){p.appendTo(t),t.find(".icons, .icon").removeClass("alt")}),breakpoints.on("<=medium",function(){p.appendTo(o),o.find(".icons, .icon").addClass("alt")}),"wp"==browser.os&&browser.osVersion<10&&a.css("transition","none");var c=e("#intro");c.length>0&&("ie"==browser.name&&i.on("resize.ie-intro-fix",function(){var e=c.height();e>i.height()?c.css("height","auto"):c.css("height",e)}).trigger("resize.ie-intro-fix"),breakpoints.on(">small",function(){d.unscrollex(),d.scrollex({mode:"bottom",top:"25vh",bottom:"-50vh",enter:function(){c.addClass("hidden")},leave:function(){c.removeClass("hidden")}})}),breakpoints.on("<=small",function(){d.unscrollex(),d.scrollex({mode:"middle",top:"15vh",bottom:"-15vh",enter:function(){c.addClass("hidden")},leave:function(){c.removeClass("hidden")}})}))}(jQuery);
+/*
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+*/
+
+(function($) {
+
+	var	$window = $(window),
+		$head = $('head'),
+		$body = $('body');
+
+	// Breakpoints.
+		breakpoints({
+			xlarge:   [ '1281px',  '1680px' ],
+			large:    [ '981px',   '1280px' ],
+			medium:   [ '737px',   '980px'  ],
+			small:    [ '481px',   '736px'  ],
+			xsmall:   [ '361px',   '480px'  ],
+			xxsmall:  [ null,      '360px'  ],
+			'xlarge-to-max':    '(min-width: 1681px)',
+			'small-to-xlarge':  '(min-width: 481px) and (max-width: 1680px)'
+		});
+
+	// Stops animations/transitions until the page has ...
+
+		// ... loaded.
+			$window.on('load', function() {
+				window.setTimeout(function() {
+					$body.removeClass('is-preload');
+				}, 100);
+			});
+
+		// ... stopped resizing.
+			var resizeTimeout;
+
+			$window.on('resize', function() {
+
+				// Mark as resizing.
+					$body.addClass('is-resizing');
+
+				// Unmark after delay.
+					clearTimeout(resizeTimeout);
+
+					resizeTimeout = setTimeout(function() {
+						$body.removeClass('is-resizing');
+					}, 100);
+
+			});
+
+	// Fixes.
+
+		// Object fit images.
+			if (!browser.canUse('object-fit')
+			||	browser.name == 'safari')
+				$('.image.object').each(function() {
+
+					var $this = $(this),
+						$img = $this.children('img');
+
+					// Hide original image.
+						$img.css('opacity', '0');
+
+					// Set background.
+						$this
+							.css('background-image', 'url("' + $img.attr('src') + '")')
+							.css('background-size', $img.css('object-fit') ? $img.css('object-fit') : 'cover')
+							.css('background-position', $img.css('object-position') ? $img.css('object-position') : 'center');
+
+				});
+
+	// Sidebar.
+		var $sidebar = $('#sidebar'),
+			$sidebar_inner = $sidebar.children('.inner');
+
+		// Inactive by default on <= large.
+			breakpoints.on('<=large', function() {
+				$sidebar.addClass('inactive');
+			});
+
+			breakpoints.on('>large', function() {
+				$sidebar.removeClass('inactive');
+			});
+
+		// Hack: Workaround for Chrome/Android scrollbar position bug.
+			if (browser.os == 'android'
+			&&	browser.name == 'chrome')
+				$('<style>#sidebar .inner::-webkit-scrollbar { display: none; }</style>')
+					.appendTo($head);
+
+		// Toggle.
+			$('<a href="#sidebar" class="toggle">Toggle</a>')
+				.appendTo($sidebar)
+				.on('click', function(event) {
+
+					// Prevent default.
+						event.preventDefault();
+						event.stopPropagation();
+
+					// Toggle.
+						$sidebar.toggleClass('inactive');
+
+				});
+
+		// Events.
+
+			// Link clicks.
+				$sidebar.on('click', 'a', function(event) {
+
+					// >large? Bail.
+						if (breakpoints.active('>large'))
+							return;
+
+					// Vars.
+						var $a = $(this),
+							href = $a.attr('href'),
+							target = $a.attr('target');
+
+					// Prevent default.
+						event.preventDefault();
+						event.stopPropagation();
+
+					// Check URL.
+						if (!href || href == '#' || href == '')
+							return;
+
+					// Hide sidebar.
+						$sidebar.addClass('inactive');
+
+					// Redirect to href.
+						setTimeout(function() {
+
+							if (target == '_blank')
+								window.open(href);
+							else
+								window.location.href = href;
+
+						}, 500);
+
+				});
+
+			// Prevent certain events inside the panel from bubbling.
+				$sidebar.on('click touchend touchstart touchmove', function(event) {
+
+					// >large? Bail.
+						if (breakpoints.active('>large'))
+							return;
+
+					// Prevent propagation.
+						event.stopPropagation();
+
+				});
+
+			// Hide panel on body click/tap.
+				$body.on('click touchend', function(event) {
+
+					// >large? Bail.
+						if (breakpoints.active('>large'))
+							return;
+
+					// Deactivate.
+						$sidebar.addClass('inactive');
+
+				});
+
+		// Scroll lock.
+		// Note: If you do anything to change the height of the sidebar's content, be sure to
+		// trigger 'resize.sidebar-lock' on $window so stuff doesn't get out of sync.
+
+			$window.on('load.sidebar-lock', function() {
+
+				var sh, wh, st;
+
+				// Reset scroll position to 0 if it's 1.
+					if ($window.scrollTop() == 1)
+						$window.scrollTop(0);
+
+				$window
+					.on('scroll.sidebar-lock', function() {
+
+						var x, y;
+
+						// <=large? Bail.
+							if (breakpoints.active('<=large')) {
+
+								$sidebar_inner
+									.data('locked', 0)
+									.css('position', '')
+									.css('top', '');
+
+								return;
+
+							}
+
+						// Calculate positions.
+							x = Math.max(sh - wh, 0);
+							y = Math.max(0, $window.scrollTop() - x);
+
+						// Lock/unlock.
+							if ($sidebar_inner.data('locked') == 1) {
+
+								if (y <= 0)
+									$sidebar_inner
+										.data('locked', 0)
+										.css('position', '')
+										.css('top', '');
+								else
+									$sidebar_inner
+										.css('top', -1 * x);
+
+							}
+							else {
+
+								if (y > 0)
+									$sidebar_inner
+										.data('locked', 1)
+										.css('position', 'fixed')
+										.css('top', -1 * x);
+
+							}
+
+					})
+					.on('resize.sidebar-lock', function() {
+
+						// Calculate heights.
+							wh = $window.height();
+							sh = $sidebar_inner.outerHeight() + 30;
+
+						// Trigger scroll.
+							$window.trigger('scroll.sidebar-lock');
+
+					})
+					.trigger('resize.sidebar-lock');
+
+				});
+
+	// Menu.
+		var $menu = $('#menu'),
+			$menu_openers = $menu.children('ul').find('.opener');
+
+		// Openers.
+			$menu_openers.each(function() {
+
+				var $this = $(this);
+
+				$this.on('click', function(event) {
+
+					// Prevent default.
+						event.preventDefault();
+
+					// Toggle.
+						$menu_openers.not($this).removeClass('active');
+						$this.toggleClass('active');
+
+					// Trigger resize (sidebar lock).
+						$window.triggerHandler('resize.sidebar-lock');
+
+				});
+
+			});
+
+})(jQuery);
